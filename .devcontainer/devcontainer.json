@@ -1,0 +1,30 @@
+// If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
+{
+	"name": "ansible (postgreSQL)",
+	"dockerComposeFile": [
+		"docker-compose.yml"
+	],
+	"service": "poc-app",
+	"workspaceFolder": "/ansible",
+	"runArgs": ["-u", "vscode"],
+	"postCreateCommand": "sudo python -m pip install -r /app/requirements/dev.txt",
+	"settings": {
+		"terminal.integrated.shell.linux": "/usr/bin/zsh",
+		"python.pythonPath": "/usr/local/bin/python",
+		"python.linting.pylintEnabled": true,
+		"python.linting.pylintPath": "/usr/local/bin/pylint",
+		"python.linting.enabled": true
+	},
+	"extensions": [
+		"ms-python.python",
+		"davidanson.vscode-markdownlint",
+		"christian-kohler.path-intellisense",
+		"vscoss.vscode-ansible",
+		"formulahendry.auto-rename-tag",
+		"p1c2u.docker-compose",
+		"henriiik.docker-linter",
+		"donjayamanne.githistory",
+		"eamodio.gitlens",
+		"esbenp.prettier-vscode"
+	]
+}

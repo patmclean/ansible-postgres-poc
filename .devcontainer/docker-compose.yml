@@ -1,0 +1,57 @@
+version: '3.3'
+
+services:
+  poc-db:
+    image: poc-db
+    hostname: poc-db
+    build:
+      context: ../db
+      dockerfile: Dockerfile
+    container_name: poc-db 
+    environment:
+      - POSTGRES_DB=poc
+      - POSTGRES_USER=poc
+      - POSTGRES_PASSWORD=supersecretpassword
+    ports:
+      - 0.0.0.0:5432:5432
+    networks:
+      poc-net:
+    volumes:
+      #Use named volume so postgres data is persisted across restart
+      - ../db/data/postgresql:/var/lib/postgresql/data
+      - ../db/sql:/sql
+
+  poc-app:
+    image: poc-app
+    hostname: poc-app
+    build:
+      context: ../app
+      dockerfile: Dockerfile
+    container_name: poc-app 
+    ports:
+      - 8000:8000
+    environment:
+      - DB_HOST=poc-db
+      - DB_NAME=poc
+      - DB_USER=poc
+      - DB_PASS=supersecretpassword
+    user: vscode
+    volumes:
+      - ../app:/app
+      - ../ansible:/ansible
+    networks:
+      poc-net:
+    depends_on:
+      - poc-db      
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    
+networks:
+  poc-net:
+
+volumes:
+  dbdata:
+  dbfiles:
+  app:
+  ansible:
+
+    

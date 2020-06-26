@@ -1,0 +1,30 @@
+version: '3.3'
+services:
+  poc-app:
+    image: poc-app
+    hostname: poc-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: poc-app 
+    ports:
+      - 8000:8000
+    environment:
+      - DB_HOST=poc-db
+      - DB_NAME=poc
+      - DB_USER=poc
+      - DB_PASS=supersecretpassword
+    user: vscode
+    volumes:
+      - .:/app
+    networks:
+      poc-net:
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    
+networks:
+  poc-net:
+
+volumes:
+  app:
+
+    

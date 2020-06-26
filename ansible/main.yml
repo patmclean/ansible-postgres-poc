@@ -1,0 +1,89 @@
+---
+- name: "PLAY: Building the Pool Creation Change Implementation Scripts"
+  hosts: all
+  gather_facts: false
+
+  vars:
+    provider:
+      user: "{{ ansible_ssh_user }}"
+      password: "{{ ansible_ssh_pass }}"
+      server: "{{ ansible_host }}"
+      validate_certs: no
+
+  # pre_tasks:
+  #   - name : Setting internals for validation
+  #     set_fact:
+  #       my_lob: "{{pr_lob | lower}}"
+  #       # my_monitor_type: "{{pr_monitor_type | lower}}"
+  #       my_pool: "{{ pr_pool_members | pool_item_list }}"
+  #     tags:
+  #       - always
+
+  #   - name: Setting TCP monitor for HEC
+  #     set_fact:
+  #       my_monitor_type: "hecprofiles.app/sap_monitor-tcp_default"
+  #     when: my_lob == "hec" and my_monitor_type == "tcp"
+  #     tags:
+  #       - always
+
+  #   - name: Setting pool members for HEC
+  #     set_fact:
+  #       my_pool: "{{ pr_pool_members | hec_pool_item_list }}"
+  #     when: my_lob == "hec"
+  #     tags:
+  #       - always
+
+  tasks:
+    # - name: Validate Platform
+    #   assert:
+    #     that:
+    #       - "pr_lob | string"
+    #     fail_msg: "Platform is not a string"
+
+    # - name: Validate Device IP
+    #   assert:
+    #     that:
+    #       - "pr_device | ipv4"
+    #     fail_msg: "Device is not an IP Address"
+
+    # - name: Validate Pool Name
+    #   assert:
+    #     that:
+    #       - "pr_pool_name | string"
+    #     fail_msg: "Pool is not a string"
+
+    # - name: Validate Pool Members
+    #   assert:
+    #     that:
+    #       - " item.ip  | ipaddr "
+    #     fail_msg: " Pool Member {{my_pool}} is invalid"
+    #   loop: "{{ my_pool }}"
+
+    # - name: Validate Monitor Type
+    #   assert:
+    #     that:
+    #       - "pr_monitor_type | string"
+    #     fail_msg: "Monitor Type is not a string"
+
+    # - debug:
+    #     msg: "{{ my_monitor_type }}"
+
+    - name: Get device groups from Load Balancers
+      bigip_device_info:
+        provider: "{{ provider }}"
+        gather_subset:
+          - device-groups
+          - ltm-pools
+          - monitors
+      register: my_device_info
+
+    - name: Retrieve the Failover device group from my_device_groups
+      set_fact:
+        device_groups: "{{ my_device_info | json_query(failover_device_group) }}"
+      vars:
+        failover_device_group: "device_groups[?type=='sync-failover'].name|[0]"
+    - debug:
+        msg: "{{my_device_info}}"
+
+    # - name: Generate Change Plan
+    #   set_fact:

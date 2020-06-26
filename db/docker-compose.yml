@@ -1,0 +1,29 @@
+version: '3.3'
+
+services:
+  poc-db:
+    image: poc-db
+    hostname: poc-db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: poc-db 
+    environment:
+      - POSTGRES_DB=poc
+      - POSTGRES_USER=poc
+      - POSTGRES_PASSWORD=supersecretpassword
+    ports:
+      - 0.0.0.0:5432:5432
+    networks:
+      poc-net:
+    volumes:
+      #Use named volume so postgres data is persisted across restart
+      - ../db/data/postgresql:/var/lib/postgresql/data
+      - ../db/sql:/sql
+
+networks:
+  poc-net:
+
+volumes:
+  dbdata:
+  dbfiles:      
